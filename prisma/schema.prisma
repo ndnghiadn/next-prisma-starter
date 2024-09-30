@@ -12,17 +12,15 @@ model User {
   name     String
   address   String?
   createdAt DateTime @default(now())
-
   posts     Post[]   @relation("UserPosts")
 }
 
 model Post {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
   title     String
   content   String?
   createdAt DateTime @default(now())
-
-  userId    String   @db.ObjectId
 
   user      User     @relation("UserPosts", fields: [userId], references: [id])
 }

@@ -1,6 +1,6 @@
 const encoder = new TextEncoder();
 
-const SECRET_KEY = process.env.JWT_SECRET;
+const SECRET_KEY = process.env.JWT_SECRET ?? "default-secret-key-132991";
 
 async function getKey() {
   return crypto.subtle.importKey(
@@ -12,7 +12,7 @@ async function getKey() {
   );
 }
 
-export const createJWT = async (payload: any) => {
+export const createJWT = async (payload: string) => {
   const header = { alg: "HS256", typ: "JWT" };
 
   const segments = [
@@ -32,14 +32,14 @@ export const createJWT = async (payload: any) => {
   return segments.join(".");
 };
 
-export const verifyJWT = async (token: any) => {
+export const verifyJWT = async (token: string): Promise<string> => {
   const segments = token.split(".");
 
   if (segments.length !== 3) {
     throw new Error("JWT must have 3 segments");
   }
 
-  const [header64, payload64, signature64] = segments;
+  const [_, payload64, signature64] = segments;
   const data = segments.slice(0, 2).join(".");
 
   const key = await getKey();
